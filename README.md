@@ -6,20 +6,20 @@ there are good questions, spicy questions, and 18+ questions. no database, no lo
 
 ## live API
 
-**https://wyr-api.onrender.com**
+**https://wyr-api-vhz0.onrender.com**
 
 ## quick start
 
 ```bash
-curl https://wyr-api.onrender.com/api/wyr
+curl https://wyr-api-vhz0.onrender.com/api/wyr
 ```
 
 no `level` means the API randomly picks `good`, `spicy`, or `18+`. if you want to keep things wholesome, pass a level:
 
 ```bash
-curl "https://wyr-api.onrender.com/api/wyr?level=good"
-curl "https://wyr-api.onrender.com/api/wyr?level=spicy"
-curl "https://wyr-api.onrender.com/api/wyr?level=18%2B"
+curl "https://wyr-api-vhz0.onrender.com/api/wyr?level=good"
+curl "https://wyr-api-vhz0.onrender.com/api/wyr?level=spicy"
+curl "https://wyr-api-vhz0.onrender.com/api/wyr?level=18%2B"
 ```
 
 ## endpoints
