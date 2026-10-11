@@ -1,0 +1,172 @@
+// wyr-api - a tiny would-you-rather API written in PlainScript.
+// yeah, there are a lot of questions in here. pick one and have fun.
+
+web app
+allow cors
+
+remember goodQuestions as list with
+    record with id "good-1" and level "good" and question `Would you rather have a perfect memory or be able to forget anything?` and optionA `perfect memory` and optionB `forget anything` done
+    record with id "good-2" and level "good" and question `Would you rather always know when someone is lying or always get away with lying?` and optionA `know when they lie` and optionB `get away with it` done
+    record with id "good-3" and level "good" and question `Would you rather live by the beach or in the mountains?` and optionA `beach` and optionB `mountains` done
+    record with id "good-4" and level "good" and question `Would you rather be able to speak every language or play every instrument?` and optionA `speak every language` and optionB `play every instrument` done
+    record with id "good-5" and level "good" and question `Would you rather have free coffee forever or free pizza forever?` and optionA `coffee` and optionB `pizza` done
+    record with id "good-6" and level "good" and question `Would you rather travel to the past or the future?` and optionA `past` and optionB `future` done
+    record with id "good-7" and level "good" and question `Would you rather be famous for something good or quietly successful?` and optionA `famous for good` and optionB `quietly successful` done
+    record with id "good-8" and level "good" and question `Would you rather never wait in line again or never hit traffic again?` and optionA `skip lines` and optionB `skip traffic` done
+    record with id "good-9" and level "good" and question `Would you rather always have perfect weather or perfect Wi-Fi?` and optionA `weather` and optionB `Wi-Fi` done
+    record with id "good-10" and level "good" and question `Would you rather own a tiny dragon or a talking dog?` and optionA `tiny dragon` and optionB `talking dog` done
+    record with id "good-11" and level "good" and question `Would you rather be the funniest person in every room or the smartest?` and optionA `funniest` and optionB `smartest` done
+    record with id "good-12" and level "good" and question `Would you rather have unlimited books or unlimited movies?` and optionA `books` and optionB `movies` done
+    record with id "good-13" and level "good" and question `Would you rather only eat sweet food or only eat salty food?` and optionA `sweet` and optionB `salty` done
+    record with id "good-14" and level "good" and question `Would you rather see ten minutes into the future or ten years into the future?` and optionA `ten minutes` and optionB `ten years` done
+    record with id "good-15" and level "good" and question `Would you rather have a rewind button or a pause button for your life?` and optionA `rewind` and optionB `pause` done
+    record with id "good-16" and level "good" and question `Would you rather be able to fly or breathe underwater?` and optionA `fly` and optionB `breathe underwater` done
+    record with id "good-17" and level "good" and question `Would you rather get one million dollars today or one hundred dollars every day forever?` and optionA `million today` and optionB `hundred daily` done
+    record with id "good-18" and level "good" and question `Would you rather have your dream job or your dream home?` and optionA `dream job` and optionB `dream home` done
+    record with id "good-19" and level "good" and question `Would you rather always find a parking spot or always get the best seat?` and optionA `parking` and optionB `best seat` done
+    record with id "good-20" and level "good" and question `Would you rather be amazing at cooking or dancing?` and optionA `cooking` and optionB `dancing` done
+    record with id "good-21" and level "good" and question `Would you rather have a personal chef or a personal driver?` and optionA `chef` and optionB `driver` done
+    record with id "good-22" and level "good" and question `Would you rather be able to teleport or time travel once a year?` and optionA `teleport` and optionB `annual time travel` done
+    record with id "good-23" and level "good" and question `Would you rather live without music or without television?` and optionA `no music` and optionB `no television` done
+    record with id "good-24" and level "good" and question `Would you rather have an extra hour every day or an extra day every week?` and optionA `extra hour` and optionB `extra day` done
+    record with id "good-25" and level "good" and question `Would you rather be great at every sport or every board game?` and optionA `sports` and optionB `board games` done
+    record with id "good-26" and level "good" and question `Would you rather have your own island or your own spaceship?` and optionA `island` and optionB `spaceship` done
+    record with id "good-27" and level "good" and question `Would you rather never lose your keys or never lose your phone?` and optionA `keys` and optionB `phone` done
+    record with id "good-28" and level "good" and question `Would you rather be able to talk to animals or understand babies?` and optionA `animals` and optionB `babies` done
+    record with id "good-29" and level "good" and question `Would you rather have a lifetime supply of your favorite snack or drink?` and optionA `snack` and optionB `drink` done
+    record with id "good-30" and level "good" and question `Would you rather be the hero of a book or the star of a movie?` and optionA `book hero` and optionB `movie star` done
+done
+
+remember spicyQuestions as list with
+    record with id "spicy-1" and level "spicy" and question `Would you rather accidentally like your crush’s old photo or send them a risky text?` and optionA `old photo like` and optionB `risky text` done
+    record with id "spicy-2" and level "spicy" and question `Would you rather go on a surprise date or plan every detail yourself?` and optionA `surprise date` and optionB `plan it` done
+    record with id "spicy-3" and level "spicy" and question `Would you rather date someone super funny or super attractive?` and optionA `funny` and optionB `attractive` done
+    record with id "spicy-4" and level "spicy" and question `Would you rather kiss on the first date or wait three dates?` and optionA `first date` and optionB `wait three dates` done
+    record with id "spicy-5" and level "spicy" and question `Would you rather have your dating history shown to your friends or your search history?` and optionA `dating history` and optionB `search history` done
+    record with id "spicy-6" and level "spicy" and question `Would you rather be left on read or get a one-word reply?` and optionA `left on read` and optionB `one-word reply` done
+    record with id "spicy-7" and level "spicy" and question `Would you rather have a cute partner with bad style or a stylish partner with no sense of humor?` and optionA `cute bad style` and optionB `stylish no humor` done
+    record with id "spicy-8" and level "spicy" and question `Would you rather always make the first move or always wait for the other person?` and optionA `make first move` and optionB `wait` done
+    record with id "spicy-9" and level "spicy" and question `Would you rather date your celebrity crush or your fictional crush?` and optionA `celebrity` and optionB `fictional` done
+    record with id "spicy-10" and level "spicy" and question `Would you rather have a partner who texts all day or calls every night?` and optionA `texts all day` and optionB `calls nightly` done
+    record with id "spicy-11" and level "spicy" and question `Would you rather share a playlist with a crush or share your camera roll?` and optionA `playlist` and optionB `camera roll` done
+    record with id "spicy-12" and level "spicy" and question `Would you rather flirt with someone at work or at a party?` and optionA `work` and optionB `party` done
+    record with id "spicy-13" and level "spicy" and question `Would you rather get flowers or a handwritten love note?` and optionA `flowers` and optionB `love note` done
+    record with id "spicy-14" and level "spicy" and question `Would you rather be caught checking someone out or be caught talking about them?` and optionA `checking them out` and optionB `talking about them` done
+    record with id "spicy-15" and level "spicy" and question `Would you rather have a partner who is clingy or a little too independent?` and optionA `clingy` and optionB `too independent` done
+    record with id "spicy-16" and level "spicy" and question `Would you rather kiss in the rain or under fireworks?` and optionA `rain` and optionB `fireworks` done
+    record with id "spicy-17" and level "spicy" and question `Would you rather go on a fancy dinner date or a chaotic road trip date?` and optionA `fancy dinner` and optionB `chaotic road trip` done
+    record with id "spicy-18" and level "spicy" and question `Would you rather be the one who gets jealous or the one who causes jealousy?` and optionA `get jealous` and optionB `cause jealousy` done
+    record with id "spicy-19" and level "spicy" and question `Would you rather have a secret admirer or secretly admire someone?` and optionA `secret admirer` and optionB `secretly admire` done
+    record with id "spicy-20" and level "spicy" and question `Would you rather accidentally call a date by your ex’s name or forget their name?` and optionA `ex name` and optionB `forget name` done
+    record with id "spicy-21" and level "spicy" and question `Would you rather have a partner who is an amazing kisser or an amazing cuddler?` and optionA `kisser` and optionB `cuddler` done
+    record with id "spicy-22" and level "spicy" and question `Would you rather send a flirty voice note or a flirty selfie?` and optionA `voice note` and optionB `selfie` done
+    record with id "spicy-23" and level "spicy" and question `Would you rather be asked out in public or privately?` and optionA `public` and optionB `private` done
+    record with id "spicy-24" and level "spicy" and question `Would you rather date someone who lives far away or someone you see too often?` and optionA `far away` and optionB `too often` done
+    record with id "spicy-25" and level "spicy" and question `Would you rather have your best friend set you up or use a dating app?` and optionA `best friend setup` and optionB `dating app` done
+    record with id "spicy-26" and level "spicy" and question `Would you rather get a good morning text or a good night text?` and optionA `good morning` and optionB `good night` done
+    record with id "spicy-27" and level "spicy" and question `Would you rather be in a love triangle or a friends-to-lovers story?` and optionA `love triangle` and optionB `friends to lovers` done
+    record with id "spicy-28" and level "spicy" and question `Would you rather have your crush read your notes app or your private messages?` and optionA `notes app` and optionB `private messages` done
+    record with id "spicy-29" and level "spicy" and question `Would you rather slow dance in the kitchen or dance badly in a club?` and optionA `kitchen` and optionB `club` done
+    record with id "spicy-30" and level "spicy" and question `Would you rather be with someone who makes you laugh or someone who makes you blush?` and optionA `laugh` and optionB `blush` done
+done
+
+remember adultQuestions as list with
+    record with id "18+-1" and level "18+" and question `Would you rather have a partner who is adventurous or very romantic?` and optionA `adventurous` and optionB `romantic` done
+    record with id "18+-2" and level "18+" and question `Would you rather plan the night or let your partner take the lead?` and optionA `plan it` and optionB `let them lead` done
+    record with id "18+-3" and level "18+" and question `Would you rather have a spontaneous night or a perfectly planned one?` and optionA `spontaneous` and optionB `planned` done
+    record with id "18+-4" and level "18+" and question `Would you rather get a flirty surprise at home or away on a trip?` and optionA `at home` and optionB `on a trip` done
+    record with id "18+-5" and level "18+" and question `Would you rather share a private fantasy or hear your partner’s?` and optionA `share yours` and optionB `hear theirs` done
+    record with id "18+-6" and level "18+" and question `Would you rather have a slow-burn connection or instant chemistry?` and optionA `slow burn` and optionB `instant chemistry` done
+    record with id "18+-7" and level "18+" and question `Would you rather spend a whole weekend cuddling or go out every night?` and optionA `cuddling` and optionB `go out` done
+    record with id "18+-8" and level "18+" and question `Would you rather be the tease or be teased?` and optionA `tease` and optionB `be teased` done
+    record with id "18+-9" and level "18+" and question `Would you rather have a partner who whispers sweet things or sends bold texts?` and optionA `whispers` and optionB `bold texts` done
+    record with id "18+-10" and level "18+" and question `Would you rather try something new together or perfect your favorite thing?` and optionA `try new` and optionB `perfect favorite` done
+    record with id "18+-11" and level "18+" and question `Would you rather have a romantic hotel night or a private night at home?` and optionA `hotel` and optionB `home` done
+    record with id "18+-12" and level "18+" and question `Would you rather receive a massage or offer one?` and optionA `receive` and optionB `offer one` done
+    record with id "18+-13" and level "18+" and question `Would you rather be kissed unexpectedly or asked first?` and optionA `unexpected` and optionB `asked first` done
+    record with id "18+-14" and level "18+" and question `Would you rather have candlelight or city lights?` and optionA `candlelight` and optionB `city lights` done
+    record with id "18+-15" and level "18+" and question `Would you rather go on a couples getaway or stay in with snacks?` and optionA `getaway` and optionB `stay in` done
+    record with id "18+-16" and level "18+" and question `Would you rather make the first move or be surprised?` and optionA `first move` and optionB `surprised` done
+    record with id "18+-17" and level "18+" and question `Would you rather keep things private or be openly affectionate?` and optionA `private` and optionB `openly affectionate` done
+    record with id "18+-18" and level "18+" and question `Would you rather have a deep late-night talk or a playful night out?` and optionA `deep talk` and optionB `playful night` done
+    record with id "18+-19" and level "18+" and question `Would you rather receive a handwritten love letter or a custom playlist?` and optionA `love letter` and optionB `playlist` done
+    record with id "18+-20" and level "18+" and question `Would you rather wake up next to someone or fall asleep on a call?` and optionA `wake up together` and optionB `fall asleep on call` done
+    record with id "18+-21" and level "18+" and question `Would you rather have one unforgettable date or lots of small cute ones?` and optionA `one unforgettable` and optionB `lots of cute ones` done
+    record with id "18+-22" and level "18+" and question `Would you rather take a couples dance class or a cooking class?` and optionA `dance class` and optionB `cooking class` done
+    record with id "18+-23" and level "18+" and question `Would you rather be complimented on your looks or your personality?` and optionA `looks` and optionB `personality` done
+    record with id "18+-24" and level "18+" and question `Would you rather have a partner who is confident or shy?` and optionA `confident` and optionB `shy` done
+    record with id "18+-25" and level "18+" and question `Would you rather spend the night talking or watching something together?` and optionA `talking` and optionB `watching` done
+    record with id "18+-26" and level "18+" and question `Would you rather have a surprise date outfit picked for you or pick theirs?` and optionA `they pick yours` and optionB `you pick theirs` done
+    record with id "18+-27" and level "18+" and question `Would you rather kiss at sunrise or under the stars?` and optionA `sunrise` and optionB `stars` done
+    record with id "18+-28" and level "18+" and question `Would you rather have a partner who remembers every detail or plans big gestures?` and optionA `remembers details` and optionB `big gestures` done
+    record with id "18+-29" and level "18+" and question `Would you rather be called irresistible or unforgettable?` and optionA `irresistible` and optionB `unforgettable` done
+    record with id "18+-30" and level "18+" and question `Would you rather have chemistry that is calm or impossible to ignore?` and optionA `calm chemistry` and optionB `impossible to ignore` done
+done
+
+route get "/"
+    reply json
+        name is "wyr-api"
+        message is "a bunch of would-you-rather questions, nothing fancy"
+        usage is "GET /api/wyr?level=good"
+    done
+done
+
+route get "/api/health"
+    reply json
+        ok is true
+        questions is length(goodQuestions) + length(spicyQuestions) + length(adultQuestions)
+        levels is list with "good", "spicy", "18+" done
+    done
+done
+
+route get "/api/levels"
+    reply json
+        levels is list with "good", "spicy", "18+" done
+        note is "leave level off and the API picks one for you"
+    done
+done
+
+route get "/api/wyr"
+    remember rawLevel as query("level") or ""
+    remember requestedLevel as ""
+    if rawLevel is empty
+        set requestedLevel to randomChoice(list with "good", "spicy", "18+" done)
+    otherwise
+        set requestedLevel to lowercase(rawLevel)
+    done
+
+    remember picked as randomChoice(goodQuestions)
+    if requestedLevel is "good"
+        set picked to randomChoice(goodQuestions)
+    otherwise if requestedLevel is "spicy"
+        set picked to randomChoice(spicyQuestions)
+    otherwise if requestedLevel is "18+"
+        set picked to randomChoice(adultQuestions)
+    otherwise
+        status 400
+        reply json
+            error is "level must be good, spicy, or 18+"
+            received is requestedLevel
+            levels is list with "good", "spicy", "18+" done
+        done
+        return
+    done
+
+    reply json
+        id is picked.id
+        level is picked.level
+        question is picked.question
+        optionA is picked.optionA
+        optionB is picked.optionB
+    done
+done
+
+when nothing matches
+    status 404
+    reply json
+        error is "not found"
+        tryThis is "GET /api/wyr?level=good"
+    done
+done
+
+start env("PORT")

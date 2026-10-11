@@ -1,0 +1,19 @@
+{
+  "name": "wyr-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "a would-you-rather API written in PlainScript and powered by Express",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "plainscript build",
+    "start": "node dist/app.js",
+    "check": "plainscript check src/app.pln"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "plainscript-lang": "^1.1.5"
+  }
+}
