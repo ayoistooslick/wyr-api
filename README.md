@@ -151,9 +151,9 @@ and starts with:
 npm start
 ```
 
-The service expects `DATABASE_URL` to point at the Render Postgres database. The checked-in `render.yaml` documents the intended `fromDatabase` connection, and the live service uses the `wyr-api-db` Postgres instance in Frankfurt.
+The service expects `DATABASE_URL` to point at PostgreSQL. The live Render service is currently connected to the externally supplied PostgreSQL URL, while the checked-in `render.yaml` also documents a Render Postgres blueprint option for recreating the setup.
 
-The database created for this hobby deployment is on Render’s free Postgres plan, which currently has an expiration window. That is a Render plan limitation, not an application behavior; move the database to a paid/non-expiring plan if this API needs to be kept around long-term.
+If you use Render’s free Postgres option, check its current retention/expiration rules before relying on it for long-term storage. That is a hosting-plan limitation, not an application behavior.
 
 ## tiny disclaimer
 
