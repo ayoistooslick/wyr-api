@@ -1,9 +1,180 @@
-// wyr-api - a tiny would-you-rather API written in PlainScript.
-// yeah, there are a lot of questions in here. pick one and have fun.
-
+// wyr-api question engine. still hobby code, just a little more serious now.
+// no AI calls. the questions come from compatible pieces and templates.
+import { createHash } from "crypto"
 web app
 allow cors
+postgres env("DATABASE_URL")
 
+execute
+    CREATE TABLE IF NOT EXISTS questions (
+        id TEXT PRIMARY KEY,
+        level TEXT NOT NULL CHECK (level IN ('good', 'spicy', '18+')),
+        question TEXT NOT NULL,
+        option_a TEXT NOT NULL,
+        option_b TEXT NOT NULL,
+        fingerprint TEXT NOT NULL UNIQUE,
+        source TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+done
+execute
+    CREATE TABLE IF NOT EXISTS question_history (
+        session_id TEXT NOT NULL,
+        level TEXT NOT NULL CHECK (level IN ('good', 'spicy', '18+')),
+        question_id TEXT NOT NULL REFERENCES questions(id),
+        served_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (session_id, level, question_id)
+    )
+done
+execute
+    CREATE INDEX IF NOT EXISTS question_history_session_level_idx
+    ON question_history (session_id, level, served_at)
+done
+execute
+    CREATE INDEX IF NOT EXISTS questions_level_idx ON questions (level)
+done
+
+make clean(text)
+    give regexReplace(lowercase(trim(text)), "\\s+", " ").replaceAll("?", "").replaceAll(".", "").replaceAll(",", "").replaceAll("!", "").replaceAll(":", "")
+done
+
+make fingerprint(level, optionA, optionB)
+    remember a as clean(optionA)
+    remember b as clean(optionB)
+    remember first as a
+    remember second as b
+    if b is less than a
+        set first to b
+        set second to a
+    done
+    give createHash("sha256").update(clean(level) + "|" + first + "|" + second).digest("hex")
+done
+
+make valid(candidate)
+    if length(trim(candidate.question)) is less than 20
+        give false
+    done
+    if length(trim(candidate.optionA)) is 0 or length(trim(candidate.optionB)) is 0
+        give false
+    done
+    if clean(candidate.optionA) is clean(candidate.optionB)
+        give false
+    done
+    if not (candidate.question contains candidate.optionA)
+        give false
+    done
+    if not (candidate.question contains candidate.optionB)
+        give false
+    done
+    give true
+done
+
+make fromComponent(level, component)
+    remember optionA as ""
+    remember optionB as ""
+    remember question as ""
+    if component.shape is "pair"
+        set optionA to component.left
+        set optionB to component.right
+        set question to `Would you rather ${optionA} or ${optionB}?`
+    otherwise if component.shape is "consequence"
+        set optionA to component.left
+        set optionB to component.right
+        set question to `Would you rather ${optionA}, even if ${component.consequenceA}, or ${optionB}, even if ${component.consequenceB}?`
+    otherwise
+        set optionA to component.actionA
+        set optionB to component.actionB
+        set question to `Would you rather always ${optionA} or never ${optionB}?`
+    done
+    give record with id uuid() and level level and question question and optionA optionA and optionB optionB and source "template" done
+done
+
+make candidateFor(level)
+    if level is "good"
+        give fromComponent(level, randomChoice(goodComponents))
+    otherwise if level is "spicy"
+        give fromComponent(level, randomChoice(spicyComponents))
+    otherwise
+        give fromComponent(level, randomChoice(adultComponents))
+    done
+done
+
+make curatedFor(level)
+    if level is "good"
+        give randomChoice(goodQuestions)
+    otherwise if level is "spicy"
+        give randomChoice(spicyQuestions)
+    otherwise
+        give randomChoice(adultQuestions)
+    done
+done
+
+remember goodComponents as list with
+    record with shape "pair" and category "food" and left `have free coffee forever` and right `have free pizza forever` done
+    record with shape "pair" and category "lifestyle" and left `never do laundry again` and right `never wash dishes again` done
+    record with shape "pair" and category "travel" and left `visit every country once` and right `visit one country every year` done
+    record with shape "pair" and category "money" and left `get $500 every month` and right `get $50,000 once` done
+    record with shape "pair" and category "technology" and left `have perfect Wi-Fi everywhere` and right `have unlimited phone battery` done
+    record with shape "pair" and category "hobbies" and left `be amazing at drawing` and right `be amazing at singing` done
+    record with shape "pair" and category "social" and left `always know what to say` and right `always know when to stay quiet` done
+    record with shape "pair" and category "home" and left `live in a tiny perfect apartment` and right `live in a huge messy house` done
+    record with shape "pair" and category "food" and left `only eat breakfast foods` and right `only eat dinner foods` done
+    record with shape "pair" and category "experience" and left `watch your favorite movie for the first time again` and right `read your favorite book for the first time again` done
+    record with shape "consequence" and category "money" and left `have a job you love` and right `earn twice as much but dislike your coworkers` and consequenceA `love your work but have a long commute` and consequenceB `earn more but dread Mondays` done
+    record with shape "consequence" and category "travel" and left `take a free trip anywhere` and right `take a free staycation with every comfort` and consequenceA `travel tomorrow with no plan` and consequenceB `stay home with everything delivered` done
+    record with shape "consequence" and category "technology" and left `give up social media` and right `give up streaming services` and consequenceA `have more free time but miss updates` and consequenceB `have endless shows but no scrolling` done
+    record with shape "consequence" and category "food" and left `eat your favorite meal every day` and right `never eat your favorite meal again` and consequenceA `never get bored of it` and consequenceB `always wonder what you are missing` done
+    record with shape "consequence" and category "friendship" and left `always have one brutally honest friend` and right `always have ten supportive friends` and consequenceA `hear hard truths` and consequenceB `never be short on encouragement` done
+    record with shape "action" and category "hypothetical" and actionA `always wake up fully rested` and actionB `never need to sleep` done
+    record with shape "action" and category "hypothetical" and actionA `be able to pause time for one hour a day` and actionB `be able to rewind your last ten minutes` done
+    record with shape "action" and category "hobbies" and actionA `master every board game` and actionB `master every video game` done
+    record with shape "action" and category "lifestyle" and actionA `always have perfect weather on weekends` and actionB `always have perfect weather on holidays` done
+    record with shape "action" and category "social" and actionA `make everyone laugh` and actionB `make everyone feel understood` done
+done
+remember spicyComponents as list with
+    record with shape "pair" and category "dating" and left `go on a surprise date` and right `plan every detail yourself` done
+    record with shape "pair" and category "dating" and left `date someone hilarious` and right `date someone ridiculously attractive` done
+    record with shape "pair" and category "relationships" and left `get a good morning text` and right `get a good night text` done
+    record with shape "pair" and category "social" and left `flirt at a party` and right `flirt at work` done
+    record with shape "pair" and category "dating" and left `be asked out in public` and right `be asked out privately` done
+    record with shape "pair" and category "relationships" and left `have a clingy partner` and right `have an independent partner` done
+    record with shape "pair" and category "dating" and left `get flowers` and right `get a handwritten love note` done
+    record with shape "pair" and category "relationships" and left `be the jealous one` and right `be the one who causes jealousy` done
+    record with shape "pair" and category "dating" and left `kiss on the first date` and right `wait three dates` done
+    record with shape "pair" and category "social" and left `share your playlist with a crush` and right `share your camera roll with a crush` done
+    record with shape "consequence" and category "dating" and left `date your celebrity crush` and right `date your fictional crush` and consequenceA `everyone knows about it` and consequenceB `nobody believes it happened` done
+    record with shape "consequence" and category "relationships" and left `always make the first move` and right `always wait for the other person` and consequenceA `risk rejection` and consequenceB `risk waiting forever` done
+    record with shape "consequence" and category "dating" and left `have your best friend set you up` and right `use a dating app` and consequenceA `hear their honest opinion` and consequenceB `swipe through strangers` done
+    record with shape "consequence" and category "social" and left `be caught checking someone out` and right `be caught talking about them` and consequenceA `look obvious` and consequenceB `look nosy` done
+    record with shape "consequence" and category "relationships" and left `have a partner who texts all day` and right `have a partner who calls every night` and consequenceA `never miss a message` and consequenceB `never miss a voice` done
+    record with shape "action" and category "dating" and actionA `slow dance in a kitchen` and actionB `dance badly in a club` done
+    record with shape "action" and category "relationships" and actionA `have instant chemistry` and actionB `have a slow-burn connection` done
+    record with shape "action" and category "dating" and actionA `be the secret admirer` and actionB `have a secret admirer` done
+    record with shape "action" and category "social" and actionA `be left on read` and actionB `get a one-word reply` done
+    record with shape "action" and category "relationships" and actionA `be called cute` and actionB `be called irresistible` done
+done
+remember adultComponents as list with
+    record with shape "pair" and category "adult" and left `share a private fantasy` and right `hear your partner’s private fantasy` done
+    record with shape "pair" and category "adult" and left `try something new together` and right `perfect your favorite thing together` done
+    record with shape "pair" and category "adult" and left `plan the night` and right `let your partner take the lead` done
+    record with shape "pair" and category "adult" and left `receive a massage` and right `give a massage` done
+    record with shape "pair" and category "adult" and left `be kissed unexpectedly` and right `be asked first` done
+    record with shape "pair" and category "adult" and left `have a romantic hotel night` and right `have a private night at home` done
+    record with shape "pair" and category "adult" and left `keep things private` and right `be openly affectionate` done
+    record with shape "pair" and category "adult" and left `spend the night talking` and right `spend the night making out` done
+    record with shape "pair" and category "adult" and left `wake up next to someone` and right `fall asleep on a call` done
+    record with shape "pair" and category "adult" and left `be teased` and right `do the teasing` done
+    record with shape "consequence" and category "adult" and left `have a partner who wants to experiment` and right `have a partner who likes keeping things classic` and consequenceA `talk openly about boundaries` and consequenceB `never have to guess what they want` done
+    record with shape "consequence" and category "adult" and left `send a bold text` and right `send a flirty voice note` and consequenceA `wait for their reaction` and consequenceB `hear yourself say it out loud` done
+    record with shape "consequence" and category "adult" and left `choose the playlist` and right `choose the lighting` and consequenceA `set the mood` and consequenceB `set the scene` done
+    record with shape "consequence" and category "adult" and left `take the first move` and right `wait to be surprised` and consequenceA `own the moment` and consequenceB `give up control` done
+    record with shape "consequence" and category "adult" and left `have one unforgettable night` and right `have lots of small romantic nights` and consequenceA `chase a big memory` and consequenceB `build a steady connection` done
+    record with shape "action" and category "adult" and actionA `kiss under the stars` and actionB `kiss at sunrise` done
+    record with shape "action" and category "adult" and actionA `be called unforgettable` and actionB `be called irresistible` done
+    record with shape "action" and category "adult" and actionA `have candlelight` and actionB `have city lights` done
+    record with shape "action" and category "adult" and actionA `take a couples dance class` and actionB `take a couples cooking class` done
+    record with shape "action" and category "adult" and actionA `have calm chemistry` and actionB `have chemistry impossible to ignore` done
+done
 remember goodQuestions as list with
     record with id "good-1" and level "good" and question `Would you rather have a perfect memory or be able to forget anything?` and optionA `perfect memory` and optionB `forget anything` done
     record with id "good-2" and level "good" and question `Would you rather always know when someone is lying or always get away with lying?` and optionA `know when they lie` and optionB `get away with it` done
@@ -103,46 +274,58 @@ remember adultQuestions as list with
     record with id "18+-30" and level "18+" and question `Would you rather have chemistry that is calm or impossible to ignore?` and optionA `calm chemistry` and optionB `impossible to ignore` done
 done
 
+
+
+
+
 route get "/"
     reply json
         name is "wyr-api"
-        message is "a bunch of would-you-rather questions, nothing fancy"
-        usage is "GET /api/wyr?level=good"
+        message is "template-generated would-you-rather questions"
+        usage is "GET /api/wyr?level=good&sessionId=optional"
     done
 done
 
 route get "/api/health"
+    remember rows as query
+        SELECT COUNT(*)::int AS questions FROM questions
+    done
     reply json
         ok is true
-        questions is length(goodQuestions) + length(spicyQuestions) + length(adultQuestions)
+        questions is rows[0].questions
         levels is list with "good", "spicy", "18+" done
+        storage is "postgres"
+    done
+done
+
+route get "/api/stats"
+    remember totals as query
+        SELECT level, COUNT(*)::int AS count FROM questions GROUP BY level ORDER BY level
+    done
+    remember history as query
+        SELECT COUNT(*)::int AS count FROM question_history
+    done
+    reply json
+        questionsByLevel is totals
+        historyRows is history[0].count
+        templates is true
+        deduplication is "sha256 fingerprint plus database uniqueness"
     done
 done
 
 route get "/api/levels"
     reply json
         levels is list with "good", "spicy", "18+" done
-        note is "leave level off and the API picks one for you"
+        note is "leave level off for a random category; add sessionId to avoid repeats for that session"
     done
 done
 
 route get "/api/wyr"
-    remember rawLevel as query("level") or ""
-    remember requestedLevel as ""
-    if rawLevel is empty
+    remember requestedLevel as clean(coalesce(query("level"), ""))
+    if requestedLevel is empty
         set requestedLevel to randomChoice(list with "good", "spicy", "18+" done)
-    otherwise
-        set requestedLevel to lowercase(rawLevel)
     done
-
-    remember picked as randomChoice(goodQuestions)
-    if requestedLevel is "good"
-        set picked to randomChoice(goodQuestions)
-    otherwise if requestedLevel is "spicy"
-        set picked to randomChoice(spicyQuestions)
-    otherwise if requestedLevel is "18+"
-        set picked to randomChoice(adultQuestions)
-    otherwise
+    if not (requestedLevel is "good" or requestedLevel is "spicy" or requestedLevel is "18+")
         status 400
         reply json
             error is "level must be good, spicy, or 18+"
@@ -152,12 +335,101 @@ route get "/api/wyr"
         return
     done
 
+    remember sessionId as trim(coalesce(query("sessionId"), ""))
+    if length(sessionId) is greater than 128
+        status 400
+        reply json
+            error is "sessionId must be 128 characters or fewer"
+        done
+        return
+    done
+
+    remember selected as ""
+    remember selectedRow as record with id "" and level "" and question "" and option_a "" and option_b "" done
+    for index attempt from 1 to 80
+        if selected is empty
+            remember candidate as candidateFor(requestedLevel)
+            if attempt is greater than 50
+                set candidate to curatedFor(requestedLevel)
+            done
+            if valid(candidate)
+                remember candidateId as candidate.id
+                remember candidateLevel as candidate.level
+                remember candidateQuestion as candidate.question
+                remember candidateA as candidate.optionA
+                remember candidateB as candidate.optionB
+                remember candidateFingerprint as fingerprint(candidateLevel, candidateA, candidateB)
+                remember candidateSource as candidate.source
+                if sessionId is empty
+                    remember claimed as query
+                        WITH inserted AS (
+                            INSERT INTO questions (id, level, question, option_a, option_b, fingerprint, source)
+                            VALUES ({candidateId}, {candidateLevel}, {candidateQuestion}, {candidateA}, {candidateB}, {candidateFingerprint}, {candidateSource})
+                            ON CONFLICT (fingerprint) DO NOTHING
+                            RETURNING id, level, question, option_a, option_b
+                        )
+                        SELECT id, level, question, option_a, option_b FROM inserted
+                        UNION ALL
+                        SELECT id, level, question, option_a, option_b FROM questions WHERE fingerprint = {candidateFingerprint}
+                        LIMIT 1
+                    done
+                    if length(claimed) is greater than 0
+                        set selectedRow to claimed[0]
+                        set selected to selectedRow.id
+                    done
+                otherwise
+                    remember claimed as query
+                        WITH inserted AS (
+                            INSERT INTO questions (id, level, question, option_a, option_b, fingerprint, source)
+                            VALUES ({candidateId}, {candidateLevel}, {candidateQuestion}, {candidateA}, {candidateB}, {candidateFingerprint}, {candidateSource})
+                            ON CONFLICT (fingerprint) DO NOTHING
+                            RETURNING id, level, question, option_a, option_b
+                        ), pool AS (
+                            SELECT id, level, question, option_a, option_b FROM inserted
+                            UNION ALL
+                            SELECT id, level, question, option_a, option_b FROM questions WHERE fingerprint = {candidateFingerprint}
+                        ), unseen AS (
+                            SELECT p.* FROM pool p
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM question_history h
+                                WHERE h.session_id = {sessionId}
+                                AND h.level = {requestedLevel}
+                                AND h.question_id = p.id
+                            )
+                            LIMIT 1
+                        ), marked AS (
+                            INSERT INTO question_history (session_id, level, question_id)
+                            SELECT {sessionId}, {requestedLevel}, id FROM unseen
+                            ON CONFLICT (session_id, level, question_id) DO NOTHING
+                            RETURNING question_id
+                        )
+                        SELECT unseen.id, unseen.level, unseen.question, unseen.option_a, unseen.option_b
+                        FROM unseen JOIN marked ON marked.question_id = unseen.id
+                    done
+                    if length(claimed) is greater than 0
+                        set selectedRow to claimed[0]
+                        set selected to selectedRow.id
+                    done
+                done
+            done
+        done
+    done
+
+    if selected is empty
+        status 409
+        reply json
+            error is "no unseen questions are currently available for this category"
+            level is requestedLevel
+            hint is "try another level or use a new sessionId"
+        done
+        return
+    done
     reply json
-        id is picked.id
-        level is picked.level
-        question is picked.question
-        optionA is picked.optionA
-        optionB is picked.optionB
+        id is selectedRow.id
+        level is selectedRow.level
+        question is selectedRow.question
+        optionA is selectedRow.option_a
+        optionB is selectedRow.option_b
     done
 done
 
@@ -165,7 +437,7 @@ when nothing matches
     status 404
     reply json
         error is "not found"
-        tryThis is "GET /api/wyr?level=good"
+        tryThis is "GET /api/wyr?level=good&sessionId=demo"
     done
 done
 

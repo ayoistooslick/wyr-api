@@ -1,0 +1,29 @@
+// pure engine checks. database behavior is exercised against the running API too.
+make clean(text)
+    give regexReplace(lowercase(trim(text)), "\\s+", " ").replaceAll("?", "").replaceAll(".", "").replaceAll(",", "")
+done
+make fingerprint(a, b)
+    remember first as clean(a)
+    remember second as clean(b)
+    if second is less than first
+        remember swap as first
+        set first to second
+        set second to swap
+    done
+    give first + "|" + second
+done
+test "whitespace and case are canonicalized"
+    check clean("  Coffee?  ") equals "coffee"
+done
+test "reversed options have the same fingerprint"
+    check fingerprint("Chef", "Driver") equals fingerprint("Driver", "Chef")
+done
+make notSame(a, b)
+    if a is b
+        give false
+    done
+    give true
+done
+test "different options make different fingerprints"
+    check notSame(fingerprint("Chef", "Driver"), fingerprint("Chef", "Pizza")) equals true
+done
